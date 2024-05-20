@@ -118,6 +118,24 @@ Dmitri & Paul (Client)
 auto eth0
 iface eth0 inet dhcp
 ```
+
+# List IP
+| Node | Kategori | IP |
+| --- | --- | --- |
+| Arakis | Router (DHCP Relay) | DHCP |
+| Mohiam | DHCP Server | 192.247.3.3 |
+| Irulan | DNS Server | 192.247.3.2 |
+| Chani | Database Server | 192.247.4.3 |
+| Stilgar | Load Balancer | 192.247.4.2 |
+| Leto | Laravel Worker | 192.247.2.2 |
+| Duncan | Laravel Worker | 192.247.2.3 |
+| Jessica | Laravel Worker | 192.247.2.4 |
+| Vladimir | PHP Worker | 192.247.1.2 |
+| Rabban | PHP Worker | 192.247.1.3 |
+| Feyd | PHP Worker | 192.247.1.4 |
+| Dmitri | Client | DHCP |
+| Paul | Client | DHCP |
+
 ## Topologi 
 ![Gambar WhatsApp 2024-05-17 pukul 18 57 22_6413b365](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/131789727/71a0cb45-e68c-4236-8ddc-2725eba1a195)
 
