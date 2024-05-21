@@ -634,7 +634,8 @@ Untuk soal 8, praktikan diminta untuk menuliskan peta tercepat menuju spice. Seh
 - Nama Algoritma Load Balancer
 - Report hasil testing pada Apache Benchmark
 - Grafik request per second untuk masing masing algoritma. 
-- Analisis (8)
+- Analisis (8).
+  
 Berikut adalah langkah-langkahnya:
 1. Kembali masuk ke terminal stilgar
 2. Masuk kembali ke file stilgar yang sudah dikerjakan tadi dan tambahkan script-script berikut!
@@ -724,12 +725,285 @@ Berikut hasil dari masing masing algoritma load balancer yang diuji pada salah s
     Hasil Request per Second = 250.67 [#/sec] (mean)
 
    Dan berikut adalah grafik dari masing-masing algoritma yang telah diuji:
-   ![output](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/124378481/8cabd7d6-bf10-4172-948a-e67f961e89ac)
+   ![output](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/124378481/8cabd7d6-bf10-4172-948a-e67f961e89ac).
+   
    Jadi, IP Hash adalah algoritma dengan Request per Second tertinggi sehingga algoritma ini yang paling tepat untuk menerima request yang berat.
 
 
 
 ## Soal 13
+Untuk soal 13, praktikan diminta untuk mengatur para pekerja House atreides di atreides.yyy.com. Lalu mengatur semua data yang diperlukan pada Chani dan harus dapat diakses oleh Leto, Duncan, dan Jessica.
+Berikut adalah script jawaban soal nomor 13, dikerjakan pada terminal Chani!
+```
+# Db akan diakses oleh 3 worker, maka 
+echo '# This group is read both by the client and the server
+# use it for options that affect everything
+[client-server]
+
+# Import all .cnf files from configuration directory
+!includedir /etc/mysql/conf.d/
+!includedir /etc/mysql/mariadb.conf.d/
+
+# Options affecting the MySQL server (mysqld)
+[mysqld]
+skip-networking=0
+skip-bind-address
+' > /etc/mysql/my.cnf
+cd /etc/mysql/mariadb.conf.d/50-server.cnf
+
+# Changes
+bind-address            = 0.0.0.0
+service mysql restart
+
+read -sp 'Enter MySQL root password: ' MYSQL_ROOT_PASSWORD
+echo
+
+# Execute MySQL commands
+mysql -u root -p"$MYSQL_ROOT_PASSWORD" <<EOF
+
+CREATE USER 'kelompokit28'@'%' IDENTIFIED BY 'passwordit28';
+CREATE USER 'kelompokit28'@'localhost' IDENTIFIED BY 'passwordit28';
+CREATE DATABASE dbkelompokit28;
+GRANT ALL PRIVILEGES ON *.* TO 'kelompokit28'@'%';
+GRANT ALL PRIVILEGES ON *.* TO 'kelompokit28'@'localhost';
+FLUSH PRIVILEGES;
+EOF
+
+echo “dbkelompokit28 created”
+
+```
+Dan berikut output yang dihasilkan:
+![Screenshot 2024-05-21 214955](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/124378481/6a777432-7d9c-447e-8780-989dfa7513c9)
+
+Dan untuk menguji di Laravel Workernya, gunakan command `mysql -h 192.247.4.3 -P 3306 -u kelompokit28 -p`.
+
+Berikut adalah dokumentasi hasil pengujiannya pada masing-masing Laravel Worker:
+* Leto
+  ![Screenshot 2024-05-21 215010](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/124378481/2efad859-7f91-4937-9dcf-94ffa3024079)
+
+* Duncan
+  ![Screenshot 2024-05-21 215024](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/124378481/f26132fc-f094-4ee8-a7e8-232580fecc7c)
+
+* Jessica
+  ![Screenshot 2024-05-21 215031](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/124378481/ad83ef2d-08b5-476c-befc-f97e06bf5c9a)
+
+
+## Soal 14
+Untuk soal 14, praktikan diminta untuk melakukan instalasi PHP8.0 dan Composer. 
+Berikut adalah script dari jawaban soal nomor 14
+
+* script14.sh
+```
+wget https://getcomposer.org/download/2.0.13/composer.phar
+chmod +x composer.phar
+mv composer.phar /usr/bin/composer
+
+apt-get install git -y
+cd /var/www && git clone https://github.com/martuafernando/laravel-praktikum-jarkom
+cd /var/www/laravel-praktikum-jarkom && composer update
+
+cd /var/www/laravel-praktikum-jarkom && cp .env.example .env
+
+echo 'APP_NAME=Laravel
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_URL=http://localhost
+
+LOG_CHANNEL=stack
+LOG_DEPRECATIONS_CHANNEL=null
+LOG_LEVEL=debug
+
+DB_CONNECTION=mysql
+DB_HOST=192.247.4.2
+DB_PORT=3306
+DB_DATABASE=dbkelompokit28
+DB_USERNAME=kelompokit28
+DB_PASSWORD=passwordit28
+
+BROADCAST_DRIVER=log
+CACHE_DRIVER=file
+FILESYSTEM_DISK=local
+QUEUE_CONNECTION=sync
+SESSION_DRIVER=file
+SESSION_LIFETIME=120
+
+MEMCACHED_HOST=127.0.0.1
+
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+
+MAIL_MAILER=smtp
+MAIL_HOST=mailpit
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=
+AWS_USE_PATH_STYLE_ENDPOINT=false
+
+PUSHER_APP_ID=
+PUSHER_APP_KEY=
+PUSHER_APP_SECRET=
+PUSHER_HOST=
+PUSHER_PORT=443
+PUSHER_SCHEME=https
+PUSHER_APP_CLUSTER=mt1
+
+VITE_PUSHER_APP_KEY="${PUSHER_APP_KEY}"
+VITE_PUSHER_HOST="${PUSHER_HOST}"
+VITE_PUSHER_PORT="${PUSHER_PORT}"
+VITE_PUSHER_SCHEME="${PUSHER_SCHEME}"
+VITE_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"' > /var/www/laravel-praktikum-jarkom/.env
+
+cd /var/www/laravel-praktikum-jarkom && php artisan key:generate
+cd /var/www/laravel-praktikum-jarkom && php artisan config:cache
+cd /var/www/laravel-praktikum-jarkom && php artisan migrate
+cd /var/www/laravel-praktikum-jarkom && php artisan db:seed
+cd /var/www/laravel-praktikum-jarkom && php artisan storage:link
+cd /var/www/laravel-praktikum-jarkom && php artisan jwt:secret
+cd /var/www/laravel-praktikum-jarkom && php artisan config:clear
+
+chown -R www-data.www-data /var/www/laravel-praktikum-jarkom/storage
+```
+
+* Leto
+```
+Nano laravel.sh
+echo 'server {
+    listen 8001;
+
+    root /var/www/laravel-praktikum-jarkom/public;
+
+    index index.php index.html index.htm;
+    server_name _;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # pass PHP scripts to FastCGI server
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.0-fpm.sock;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+
+    error_log /var/log/nginx/leto_error.log;
+    access_log /var/log/nginx/leto_access.log;
+}' > /etc/nginx/sites-available/laravel-leto
+
+ln -s /etc/nginx/sites-available/laravel-leto /etc/nginx/sites-enabled/
+
+# Test the Nginx configuration for syntax errors
+nginx -t
+
+# If the configuration test is successful, restart Nginx using the service command
+if [ $? -eq 0 ]; then
+    service nginx restart
+else
+    echo "Nginx configuration test failed. Please check the error messages above."
+fi
+```
+
+* Duncan
+```
+Nano laraveldun.sh
+echo 'server {
+    listen 8002;
+
+    root /var/www/laravel-praktikum-jarkom/public;
+
+    index index.php index.html index.htm;
+    server_name _;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # pass PHP scripts to FastCGI server
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.0-fpm.sock;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+
+    error_log /var/log/nginx/duncan_error.log;
+    access_log /var/log/nginx/duncan_access.log;
+}' > /etc/nginx/sites-available/laravel-duncan
+
+ln -s /etc/nginx/sites-available/laravel-duncan /etc/nginx/sites-enabled/
+
+# Test the Nginx configuration for syntax errors
+nginx -t
+
+# If the configuration test is successful, restart Nginx using the service command
+if [ $? -eq 0 ]; then
+    service nginx restart
+else
+    echo "Nginx configuration test failed. Please check the error messages above."
+fi
+```
+
+* Jessica
+```
+Nano laraveljes.sh
+echo 'server {
+    listen 8003;
+
+    root /var/www/laravel-praktikum-jarkom/public;
+
+    index index.php index.html index.htm;
+    server_name _;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # pass PHP scripts to FastCGI server
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.0-fpm.sock;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+
+    error_log /var/log/nginx/jessica_error.log;
+    access_log /var/log/nginx/jessica_access.log;
+}' > /etc/nginx/sites-available/laravel-jessica
+ln -s /etc/nginx/sites-available/laravel-jessica /etc/nginx/sites-enabled/
+
+# Test the Nginx configuration for syntax errors
+nginx -t
+
+# If the configuration test is successful, restart Nginx using the service command
+if [ $? -eq 0 ]; then
+    service nginx restart
+else
+    echo "Nginx configuration test failed. Please check the error messages above."
+fi
+```
+Untuk Output masih error sehingga tidak ditampilkan.
+
+## Kendala
+   - Soal 9-12, 14(output)-20 belum terselesaikan
+
+### Sekian Laporan Resmi Modul 3 Jarkom Kelompok IT28
 
 
 
