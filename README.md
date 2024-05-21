@@ -258,3 +258,69 @@ apt-get install jq -y
 ```
 
 ## Soal 0-1
+Masukkan code berikut ke dalam file irulan
+```
+echo 'zone "harkonen.it28.com" {
+    type master;
+    file "/etc/bind/sites/harkonen.it28.com";
+};
+zone "atreides.it28.com" {
+    type master;
+    file "/etc/bind/sites/atreides.it28.com";
+};' > /etc/bind/named.conf.local
+
+mkdir -p /etc/bind/sites
+cp /etc/bind/db.local /etc/bind/sites/harkonen.it28.com
+cp /etc/bind/db.local /etc/bind/sites/atreides.it28.com
+
+echo ';
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     harkonen.it28.com. root.harkonen.it28.com. (
+                        2023281401      ; Serial
+                        604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                        604800 )       ; Negative Cache TTL
+;
+@       IN      NS      harkonen.it28.com.
+@       IN      A       192.247.1.2    ; IP Vladimir
+www     IN      CNAME   harkonen.it28.com.' > /etc/bind/sites/harkonen.it28.com
+
+
+
+echo ';
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     atreides.it28.com. root.atreides.it28.com. (
+                              2023281401         ; Serial
+                              604800              ; Refresh
+                              86400              ; Retry
+                            2419200              ; Expire
+                              604800 )            ; Negative Cache TTL
+;
+@       IN      NS      atreides.it28.com.
+@       IN      A       192.247.2.2    ; IP Leto
+www     IN      CNAME   atreides.it28.com.' > /etc/bind/sites/atreides.it28.com
+
+echo 'options {
+    directory "/var/cache/bind";
+
+    forwarders {
+        192.168.122.1;
+    };
+
+    // dnssec-validation auto;
+
+    allow-query { any; };
+    auth-nxdomain no;    # conform to RFC1035
+    listen-on-v6 { any; };
+};' > /etc/bind/named.conf.options
+
+
+service bind9 restart
+```
+Untuk hasilnya dapat dilihat pada foto berikut
+![Screenshot 2024-05-21 204601](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/124378481/0c716a16-057a-47cd-b6b4-7e2dba8c6dba)
