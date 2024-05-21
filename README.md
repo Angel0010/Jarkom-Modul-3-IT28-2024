@@ -140,3 +140,39 @@ iface eth0 inet dhcp
 ![Gambar WhatsApp 2024-05-17 pukul 18 57 22_6413b365](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/131789727/71a0cb45-e68c-4236-8ddc-2725eba1a195)
 
 ## Setup yang dilakukam sebelum pengerjaan soal shift 
+# buatlah ```~/.bashrc``` pada setiap node 
+Arakis (Router (DHCP Relay))
+```
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE -s 192.247.0.0/16
+echo nameserver 192.168.122.1 > /etc/resolv.conf
+apt-get update
+apt install isc-dhcp-relay -y
+```
+- Masukkan IP Mohiam (```192.247.3.3```) pada inputan DHCP relay should forward request to
+- Masukkan ``` eth1 eth2 eth3 eth4``` pada inputan DHCP relay should listen on
+- Pada file ``` /etc/sysctl.conf ```, uncomment script ``` net.ipv4.ip_forward=1 ```
+- Lakukan ```service isc-dhcp-relay restart```
+Mohiam (DHCP Server)
+```
+echo 'nameserver 192.168.122.1' > /etc/resolv.conf 
+apt-get update 
+apt-get install isc-dhcp-server 
+service isc-dhcp-server status 
+echo 'INTERFACESv4="eth0"' > /etc/default/isc-dhcp-server 
+```
+- Buka file ```/etc/dhcp/dhcpd.conf``` dan ubah script menjadi seperti ini
+  ```
+  ddns-update-style none ;
+	
+	subnet 192.247.1.0 netmask 255.255.255.0 {
+  }
+  subnet 192.247.2.0 netmask 255.255.255.0 {
+  }
+  subnet 192.247.3.0 netmask 255.255.255.0 { 
+  }
+  subnet 192.247.4.0 netmask 255.255.255.0 {
+  }
+  ```
+- Lakukan ``` service isc-dhcp-server start ```
+
+
