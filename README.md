@@ -258,7 +258,7 @@ apt-get install jq -y
 ```
 
 ## Soal 0-1
-Masukkan code berikut ke dalam file irulan
+Masukkan code berikut ke dalam terminal file irulan!
 ```
 echo 'zone "harkonen.it28.com" {
     type master;
@@ -322,5 +322,416 @@ echo 'options {
 
 service bind9 restart
 ```
-Untuk hasilnya dapat dilihat pada foto berikut
+Untuk hasilnya dapat dilihat pada foto berikut!
 ![Screenshot 2024-05-21 204601](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/124378481/0c716a16-057a-47cd-b6b4-7e2dba8c6dba)
+
+## Soal 2
+Kemudian untuk soal nomor 2, masukkan code di terminal file irulan juga.
+```
+echo 'subnet 192.247.1.0 netmask 255.255.255.0 {
+    range 192.247.1.14 192.247.1.28;
+    range 192.247.1.49 192.247.1.70;
+    option routers 192.247.1.1;
+}
+
+subnet 192.247.3.0 netmask 255.255.255.0 {
+}
+
+subnet 192.247.4.0 netmask 255.255.255.0 {
+
+}' > /etc/dhcp/dhcpd.conf
+
+service isc-dhcp-server start
+```
+Untuk hasilnya dapat dilihat pada foto berikut!
+![Screenshot 2024-05-21 205524](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/124378481/895d4bdd-976d-4f5f-af13-3447188f00f3)
+![Screenshot 2024-05-21 205525](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/124378481/0a9457e6-1e11-4b7e-a7b3-b6f2721b583e)
+
+## Soal 3-5
+Untuk soal selanjutnya dikerjakan di terminal mohiam dengan script sebagai berikut! 
+```
+apt-get update
+apt install isc-dhcp-server -y
+
+echo "INTERFACESv4=\"eth0\"
+INTERFACESv6=\"\"" > /etc/default/isc-dhcp-server
+
+
+echo "subnet 192.247.1.0 netmask 255.255.255.0 {
+    range 192.247.1.14 192.247.1.28;
+    range 192.247.1.49 192.247.1.70;         // Range IP Client House Harkonen
+    option routers 192.247.1.1;
+    option broadcast-address 192.247.1.255;
+    option domain-name-servers 192.247.3.2;
+    default-lease-time 300;
+    max-lease-time 5220;  // Durasi DHCP Server yang melalui House Harkonen
+}
+
+subnet 192.247.2.0 netmask 255.255.255.0 {
+    range 192.247.2.15 192.247.2.25;
+    range 192.247.2.200 192.247.2.210;       // // Range IP Client House Atreides
+    option routers 192.247.2.1;
+    option broadcast-address 192.247.2.255;
+    option domain-name-servers 192.247.3.2;
+    default-lease-time 1200;
+    max-lease-time 5220;   // Durasi DHCP Server yang melalui House Atreides
+
+subnet 192.247.3.0 netmask 255.255.255.0 {
+    option routers 192.247.3.1;
+    option broadcast-address 192.247.3.255;
+}
+
+subnet 192.247.4.0 netmask 255.255.255.0 {
+    option routers 192.247.4.1;
+    option broadcast-address 192.247.4.255;
+}" >/etc/dhcp/dhcpd.conf
+
+rm -f /var/run/dhcpd.pid
+service isc-dhcp-server restart
+service isc-dhcp-server status
+```
+Untuk hasilnya google bisa di ping melalui client Dmitri dengan IP Irulan.
+![Screenshot 2024-05-21 210611](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/124378481/6acd9054-f99a-47a3-8922-a4dd32a92a4c)
+
+## Soal 6
+Soal nomor 6 dikerjakan pada PHP Worker yaitu di Node Vladimir, Rabban, dan Feyd. Sehingga, masukkan script berikut kedalam masing-masing file di tiap node PHP Worker di terminal tiap PHP Worker!
+* Vladimir
+```
+echo 'nameserver 192.247.3.2' > /etc/resolv.conf
+apt-get update
+apt-get install nginx -y
+apt-get install wget -y
+apt-get install unzip -y
+apt-get install lynx -y
+apt-get install htop -y
+apt-get install apache2-utils -y
+apt-get install php7.3-fpm php7.3-common php7.3-mysql php7.3-gmp php7.3-curl php7.3-intl php7.3-mbstring php7.3-xmlrpc php7.3-gd php7.3-xml php7.3-$apt update
+apt install wget
+
+service nginx start
+service php7.3-fpm start
+
+wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1lmnXJUbyx1JDt2OA5z_1dEowxozfkn30' -O /var/www/harkonen.com
+unzip -o /var/www/harkonen.com -d /var/www/
+rm /var/www/harkonen.com
+mv /var/www/modul-3 /var/www/harkonen.com
+
+cp /etc/nginx/sites-available/default /etc/nginx/sites-available/harkonen.com
+ln -s /etc/nginx/sites-available/harkonen.com /etc/nginx/sites-enabled/
+rm /etc/nginx/sites-enabled/default
+
+echo 'server {
+    listen 80;
+    server_name _;
+
+    root /var/www/harkonen.com;
+    index index.php index.html index.htm;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php7.3-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+}' > /etc/nginx/sites-available/harkonen.com
+
+service nginx restart
+  ```
+
+* Rabban
+```
+echo 'nameserver 192.247.3.2' > /etc/resolv.conf
+apt-get update
+apt-get install nginx -y
+apt-get install wget -y
+apt-get install unzip -y
+apt-get install lynx -y
+apt-get install htop -y
+apt-get install apache2-utils -y
+apt-get install php7.3-fpm php7.3-common php7.3-mysql php7.3-gmp php7.3-curl php7.3-intl php7.3-mbstring php7.3-xmlrpc php7.3-gd php7.3-xml php7.3-$apt update
+apt install wget
+
+service nginx start
+service php7.3-fpm start
+
+wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1lmnXJUbyx1JDt2OA5z_1dEowxozfkn30' -O /var/www/harkonen.com
+unzip -o /var/www/harkonen.com -d /var/www/
+rm /var/www/harkonen.com
+mv /var/www/modul-3 /var/www/harkonen.com
+
+cp /etc/nginx/sites-available/default /etc/nginx/sites-available/harkonen.com
+ln -s /etc/nginx/sites-available/harkonen.com /etc/nginx/sites-enabled/
+rm /etc/nginx/sites-enabled/default
+
+echo 'server {
+    listen 80;
+    server_name _;
+
+    root /var/www/harkonen.com;
+    index index.php index.html index.htm;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php7.3-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+}' > /etc/nginx/sites-available/harkonen.com
+
+service nginx restart
+```
+
+* Feyd
+```
+echo 'nameserver 192.247.3.2' > /etc/resolv.conf
+apt-get update
+apt-get install nginx -y
+apt-get install wget -y
+apt-get install unzip -y
+apt-get install lynx -y
+apt-get install htop -y
+apt-get install apache2-utils -y
+apt-get install php7.3-fpm php7.3-common php7.3-mysql php7.3-gmp php7.3-curl php7.3-intl php7.3-mbstring php7.3-xmlrpc php7.3-gd php7.3-xml php7.3-$apt update
+apt install wget
+
+service nginx start
+service php7.3-fpm start
+
+wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1lmnXJUbyx1JDt2OA5z_1dEowxozfkn30' -O /var/www/harkonen.com
+unzip -o /var/www/harkonen.com -d /var/www/
+rm /var/www/harkonen.com
+mv /var/www/modul-3 /var/www/harkonen.com
+
+cp /etc/nginx/sites-available/default /etc/nginx/sites-available/harkonen.com
+ln -s /etc/nginx/sites-available/harkonen.com /etc/nginx/sites-enabled/
+rm /etc/nginx/sites-enabled/default
+
+echo 'server {
+    listen 80;
+    server_name _;
+
+    root /var/www/harkonen.com;
+    index index.php index.html index.htm;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php7.3-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+}' > /etc/nginx/sites-available/harkonen.com
+
+service nginx restart
+```
+Kemudian jalankan dengan command `lynx localhost` pada masing-masing terminal PHP Worker! lalu berikut adalah dokumentasi hasilnya.
+* Vladimir
+  ![vladimir](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/124378481/d605793a-26bd-41e9-9054-7095e9657ad5)
+
+* Rabban
+  ![rabban](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/124378481/da76cf4e-9471-4209-b467-9c3cc074d7a7)
+
+* Feys
+  ![feys](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/124378481/e04bc218-15d6-4844-9571-ac230d53a7d6)
+
+## Soal 7
+Untuk soal 7, praktikan diminta agar Stilgar dari fremen dapat dapat bekerja sama dengan maksimal, lalu lakukan testing dengan 5000 request dan 150 request/second. Berikut adalah langkah-langkahnya:
+1. Kembali ke terminal irulan dan buka file scriptnya yang tadi telah dikerjakan
+2. Masukkan script tambahan berikut!
+```
+echo '
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     atreides.it28.com. root.atreides.it28.com. (
+                         2024051601     ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN      NS      atreides.it28.com.
+@       IN      A       192.247.4.3 ; Stilgar' > /etc/bind/atreides/atreides.it28.com
+
+
+echo '
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     harkonen.it28.com. root.harkonen.it28.com. (
+                     2024051601         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN      NS      harkonen.it28.com.
+@       IN      A       192.247.4.3 ; Stilgar' > /etc/bind/harkonen/harkonen.it28.com
+
+```
+3. Lalu kembali jalankan filenya dan kemudian masuk ke terminal stilgar
+4. Kemudian masukkan script baru pada file stilgarnya sebagai berikut:
+```
+echo 'nameserver 192.247.3.2' > /etc/resolv.conf
+
+apt-get update
+apt-get install apache2-utils -y
+apt-get install nginx -y
+apt-get install lynx -y
+
+service nginx start
+
+
+cp /etc/nginx/sites-available/default /etc/nginx/sites-available/lb_php
+
+   echo ' upstream worker {
+    server 192.247.1.2;
+    server 192.247.1.3;
+    server 192.247.1.4;
+}
+
+server {
+    listen 80;
+    server_name harkonen.it28.com www.harkonen.it28.com;
+
+    root /var/www/html;
+
+    index index.html index.htm index.nginx-debian.html;
+
+    server_name _;
+
+    location / {
+        proxy_pass http://worker;
+    }
+} ' > /etc/nginx/sites-available/lb_php
+
+ln -s /etc/nginx/sites-available/lb_php /etc/nginx/sites-enabled/
+rm /etc/nginx/sites-enabled/default
+
+service nginx restart
+
+```
+5. Kemudian jalankan filenya dan masuk ke node Dmitri
+6. Untuk menjalankan soal nomor 7, gunakan command  `ab -n 5000 -c 150 http://192.247.4.3/` dan berikut adalah hasilnya:
+![dmitri](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/124378481/f3504a94-5703-4797-963f-1834916b3f65)
+Request per Second yang diterima dari pengujian adalah sebesar  1390.72 [#/sec] (mean).
+
+## Soal 8
+Untuk soal 8, praktikan diminta untuk menuliskan peta tercepat menuju spice. Sehingga praktikan diminta untuk membuat analisis hasil testing dengan 500 request dan 50 request/second masing-masing algoritma Load Balancer dengan ketentuan sebagai berikut:
+- Nama Algoritma Load Balancer
+- Report hasil testing pada Apache Benchmark
+- Grafik request per second untuk masing masing algoritma. 
+- Analisis (8)
+Berikut adalah langkah-langkahnya:
+1. Kembali masuk ke terminal stilgar
+2. Masuk kembali ke file stilgar yang sudah dikerjakan tadi dan tambahkan script-script berikut!
+```
+upstream roundrobin_worker {
+    server 192.247.1.2;
+    server 192.247.1.3;
+    server 192.247.1.4;
+}
+
+upstream leastconn_worker {
+    least_conn;
+    server 192.247.1.2;
+    server 192.247.1.3;
+    server 192.247.1.4;
+}
+
+upstream weightedrr_worker {
+    server 192.247.1.2 weight=3;
+    server 192.247.1.3 weight=2;
+    server 192.247.1.4 weight=1;
+}
+
+upstream iphash_worker {
+    ip_hash;
+    server 192.247.1.2;
+    server 192.247.1.3;
+    server 192.247.1.4;
+}
+upstream hash_worker {
+    hash $request_uri consistent;
+    server 192.247.1.2;
+    server 192.247.1.3;
+    server 192.247.1.4;
+}
+
+```
+
+```
+location / {
+        proxy_pass http://worker;
+        auth_basic "Restricted Content";
+        auth_basic_user_file /etc/nginx/supersecret/htpasswd;
+    }
+    location /roundrobin {
+        proxy_pass http://roundrobin_worker;
+    }
+    location /leastconn {
+        proxy_pass http://leastconn_worker;
+    }
+    location /weightedrr {
+        proxy_pass http://weightedrr_worker;
+    }
+    location /iphash {
+        proxy_pass http://iphash_worker;
+    }
+    location /hash {
+        proxy_pass http://hash_worker;
+    }
+} 
+
+```
+Dua script diatas berguna untuk memasukkan algoritma load balancer agar bisa diuji pada client 
+
+3. Jalankan kembali filenya kemudian kembali ke terminal client
+4. Untuk menjalankannya, gunakan command `ab -n 5000 -c 150 http://192.247.4.3/wkwkwk/` dengan wkwkwk dengan diganti nama algoritma load balancer yang ingin diuji, contoh round robin.
+
+Berikut hasil dari masing masing algoritma load balancer yang diuji pada salah satu client:
+1. Round Robin
+   ![roundrobin](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/124378481/8b92a828-34ba-4e2a-ae85-d234b511e06d)
+   Hasil Request per Second = 267.31 [#/sec] (mean)
+
+2. Least Connection
+   ![leastconnection](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/124378481/c3f6777a-be7f-4d68-bfcf-af03b63e8b36)
+   Hasil Request per Second = 274.13 [#/sec] (mean)
+
+3. Weighted Round Robin
+   ![weightedroundrobin](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/124378481/5cf9a8d9-bff8-4a64-a57d-08b4f2186fed)
+    Hasil Request per Second =  291.57 [#/sec] (mean)
+
+4. IP Hash
+   ![iphash](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/124378481/d5600669-61f4-4a87-947a-3d162bc86210)
+   Hasil Request per Second = 311.14 [#/sec] (mean)
+
+5. Generic Hash
+   ![generichash](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/124378481/ac18fbd0-4c1e-4b32-9878-d4bea3a3d5b3)
+    Hasil Request per Second = 250.67 [#/sec] (mean)
+
+   Dan berikut adalah grafik dari masing-masing algoritma yang telah diuji:
+   ![output](https://github.com/Angel0010/Jarkom-Modul-3-IT28-2024/assets/124378481/8cabd7d6-bf10-4172-948a-e67f961e89ac)
+   Jadi, IP Hash adalah algoritma dengan Request per Second tertinggi sehingga algoritma ini yang paling tepat untuk menerima request yang berat.
+
+
+
+## Soal 13
+
+
+
+
+
